@@ -11,6 +11,7 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+
 }
 
 .main {
@@ -24,9 +25,10 @@ body {
 }
 
 .bg-dark {
-  background-color: #DEE2E9;
+
+  background-color: #282c34;
   height: 30rem !important;
-  padding: 10rem 0 0 35rem;
+  padding: 10rem 0 0 0;
 }
 
 
@@ -180,7 +182,9 @@ body {
   box-sizing: border-box;
   background-color: white;
   width: 300px;
+  margin:  auto;
   padding: 2rem;
+  align-items: center;
 }
 
 .sign-in-icon {
