@@ -15,7 +15,7 @@ function UserPage() {
         const token = localStorage.getItem('token');
 
         if (!token) {
-            // Rediriger l'utilisateur vers la page de connexion si le token n'existe pas
+
             navigate('/api/v1/user/login');
             return;
         }
@@ -67,9 +67,9 @@ function UserPage() {
         })
             .then(response => response.json())
             .then(data => {
-                // Vérifier si la mise à jour a réussi
+
                 if (data.status === 200) {
-                    // Mettre à jour les valeurs du prénom et du nom de famille dans l'état
+
                     setFirstName(editedFirstName);
                     setLastName(editedLastName);
 

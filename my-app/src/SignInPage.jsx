@@ -9,16 +9,16 @@ const SignIn = () => {
     const [usernameError, setUsernameError] = useState('');
     const [passwordError, setPasswordError] = useState('');
 
-    const navigate = useNavigate(); // Obtention de la fonction de navigation
+    const navigate = useNavigate();
 
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        // Reset error messages
+
         setUsernameError('');
         setPasswordError('');
 
-        // Perform validation
+
         if (username.trim() === '') {
             setUsernameError('Veuillez saisir votre email.');
             return;
@@ -29,21 +29,16 @@ const SignIn = () => {
             return;
         }
 
-        // Perform connection logic here using the retrieved username and password
-        console.log('Username:', username);
-        console.log('Password:', password);
-
-        // Clear the form fields after submission
         setUsername('');
         setPassword('');
 
-        // Prepare the request body
+
         const requestBody = {
             "email": username,
             "password": password
         };
 
-        // Make the fetch request
+
         fetch('/api/v1/user/login', {
             method: 'POST',
             headers: {
@@ -53,19 +48,19 @@ const SignIn = () => {
         })
             .then(response => response.json())
             .then(data => {
-                // Handle the response from the server
+
                 if (data.status === 200) {
-                    // Login successful
+
                     console.log('Login successful');
-                    localStorage.setItem('token', data.body.token); // Store the token in localStorage
-                    navigate('/user'); // Redirection vers la page utilisateur
+                    localStorage.setItem('token', data.body.token);
+                    navigate('/user');
                 } else {
-                    // Login failed, display error message
+
                     console.log('Login failed:', data.message);
                 }
             })
             .catch(error => {
-                // Handle any errors during the request
+
                 console.log('Error:', error.message);
             });
     };
