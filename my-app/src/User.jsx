@@ -2,82 +2,46 @@ import React, {useState, useEffect} from 'react';
 import {Link, useNavigate} from 'react-router-dom';
 import {BiUserCircle} from 'react-icons/bi';
 import {FiLogOut} from 'react-icons/fi';
+import {useDispatch, useSelector} from 'react-redux';
+import {logOut, updateUser} from './Action';
 
 function UserPage() {
+    const dispatch = useDispatch();
+    const {user, token} = useSelector(state => state);
+    console.log(user);
     const navigate = useNavigate();
-    const [firstName, setFirstName] = useState('');
-    const [lastName, setLastName] = useState('');
-    const [editedFirstName, setEditedFirstName] = useState('');
-    const [editedLastName, setEditedLastName] = useState('');
     const [isEditing, setIsEditing] = useState(false);
+    const [isHomePage, setIsHomePage] = useState(false);
+    const [editedUser, setEditedUser] = useState({...user});
 
     useEffect(() => {
-        const token = localStorage.getItem('token');
-
-        if (!token) {
-
-            navigate('/api/v1/user/login');
+        if (!user) {
+            navigate('/user');
             return;
         }
-        const fetchUserData = async () => {
-            try {
-                const response = await fetch('/api/v1/user/profile', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        Authorization: `Bearer ${localStorage.getItem('token')}`,
-                    },
-                });
 
-                const data = await response.json();
-
-                if (response.ok && data.body.firstName && data.body.lastName) {
-                    setFirstName(data.body.firstName);
-                    setLastName(data.body.lastName);
-                } else {
-                    console.log('Failed to fetch user data');
-                }
-            } catch (error) {
-                console.log('Error:', error.message);
-            }
-        };
-
-        fetchUserData().then(r => r);
-    }, []);
-
-    const handleEditName = () => {
-        setIsEditing(true);
-        setEditedFirstName(firstName);
-        setEditedLastName(lastName);
-    };
+        if (user && user.firstName && user.lastName) {
+            setEditedUser({...user});
+        }
+    }, [user, token, navigate]);
 
     const handleSaveName = () => {
-        const updatedData = {
-            firstName: editedFirstName,
-            lastName: editedLastName,
-        };
-
         fetch('/api/v1/user/profile', {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
-                Authorization: `Bearer ${localStorage.getItem('token')}`,
+                Authorization: `Bearer ${token}`,
             },
-            body: JSON.stringify(updatedData),
+            body: JSON.stringify({
+                firstName: editedUser.firstName,
+                lastName: editedUser.lastName,
+            }),
         })
             .then(response => response.json())
             .then(data => {
-
                 if (data.status === 200) {
-
-                    setFirstName(editedFirstName);
-                    setLastName(editedLastName);
-
-                    setEditedFirstName('');
-                    setEditedLastName('');
+                    dispatch(updateUser(editedUser));
                     setIsEditing(false);
-
-                    console.log('Name updated successfully');
                 } else {
                     console.log('Failed to update name:', data.message);
                 }
@@ -89,14 +53,13 @@ function UserPage() {
 
     const handleCancelEdit = () => {
         setIsEditing(false);
-        setEditedFirstName('');
-        setEditedLastName('');
+        setEditedUser({...user});
     };
 
     const handleSignOut = () => {
-        setEditedFirstName('');
-        setEditedLastName('');
-        localStorage.removeItem('token');
+        if (!isHomePage) {
+            dispatch(logOut());
+        }
         navigate('/');
     };
 
@@ -114,7 +77,7 @@ function UserPage() {
                 <div>
                     <Link className="main-nav-item" to="/user">
                         <i className="fa fa-user-circle"></i>
-                        <BiUserCircle/> {`${firstName}`}
+                        <BiUserCircle/> {`${editedUser.firstName}`}
                     </Link>
                     <Link className="main-nav-item" to="/" onClick={handleSignOut}>
                         <FiLogOut/>
@@ -126,24 +89,24 @@ function UserPage() {
                 <div className="header">
                     <h1 className="titre">
                         Welcome back<br/>
-                        {!isEditing && `${firstName} ${lastName}`}
+                        {!isEditing && `${editedUser.firstName} ${editedUser.lastName}`}
                     </h1>
                     {isEditing ? (
                         <div className="">
                             <div>
                                 <input
                                     type="text"
-                                    value={editedFirstName}
+                                    value={editedUser.firstName}
                                     className="prenom"
-                                    onChange={e => setEditedFirstName(e.target.value)}
-                                    placeholder={firstName} // Ici, la valeur de placeholder sera remplacée par le prénom actuel
+                                    onChange={e => setEditedUser({...editedUser, firstName: e.target.value})}
+                                    placeholder={editedUser.firstName} // Ici, la valeur de placeholder sera remplacée par le prénom actuel
                                 />
                                 <input
                                     type="text"
                                     className="nom"
-                                    value={editedLastName}
-                                    onChange={e => setEditedLastName(e.target.value)}
-                                    placeholder={lastName} // Ici, la valeur de placeholder sera remplacée par le nom actuel
+                                    value={editedUser.lastName}
+                                    onChange={e => setEditedUser({...editedUser, lastName: e.target.value})}
+                                    placeholder={editedUser.lastName} // Ici, la valeur de placeholder sera remplacée par le nom actuel
                                 />
                             </div>
                             <div>
@@ -152,9 +115,7 @@ function UserPage() {
                             </div>
                         </div>
                     ) : (
-                        <button className="edit-button" onClick={handleEditName}>
-                            Edit Name
-                        </button>
+                        <button onClick={() => setIsEditing(true)} className="btnedit">Edit Name</button>
                     )}
                 </div>
                 <h2 className="sr-only">Accounts</h2>
