@@ -12,8 +12,8 @@ function App() {
             <Router>
                 <Routes>
                     <Route path="/" element={<HomePage/>}/>
-                    <Route path="/api/v1/user/login" element={<SignInPage/>}/>
-                    <Route path="/user" element={<User/>}/>
+                    <Route path="user/login" element={<SignInPage/>}/>
+                    <Route path="/user/profile" element={<User/>}/>
                 </Routes>
             </Router>
         </Provider>

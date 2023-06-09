@@ -21,42 +21,45 @@ const SignIn = () => {
     setPasswordError('');
 
     if (username.trim() === '') {
-      setUsernameError('Veuillez saisir votre email.');
-      return;
+        setUsernameError('Veuillez saisir votre email.');
+        return;
     }
 
     if (password.trim() === '') {
-      setPasswordError('Veuillez saisir votre mot de passe.');
-      return;
+        setPasswordError('Veuillez saisir votre mot de passe.');
+        return;
     }
 
     const requestBody = {
-      "email": username,
-      "password": password
+        "email": username,
+        "password": password
     };
 
     fetch('/api/v1/user/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(requestBody)
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(requestBody)
     })
-      .then(response => response.json())
-      .then(data => {
-        if (data.status === 200) {
-          console.log('Login successful', (data.body.token));
-          dispatch(logIn(data.body.token));
-          getUserProfile(data.body.token);
-          navigate('/user');
-        } else {
-          console.log('Login failed:', data.message);
-        }
-      })
-      .catch(error => {
-        console.log('Error:', error.message);
-      });
-  };
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 200) {
+                console.log('Login successful', (data.body.token));
+                dispatch(logIn(data.body.token));
+                getUserProfile(data.body.token);
+                navigate('/user/profile');
+            } else {
+                console.log('Login failed:', data.message);
+                alert('Échec de la connexion. Veuillez vérifier vos informations de connexion.');
+            }
+        })
+        .catch(error => {
+            console.log('Error:', error.message);
+            alert("Une erreur s'est produite lors de la connexion.");
+        });
+};
+
 
   const getUserProfile = (token) => {
     fetch('/api/v1/user/profile', {

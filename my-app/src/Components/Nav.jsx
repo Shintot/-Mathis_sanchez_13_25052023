@@ -18,12 +18,12 @@ const MainNav = () => {
       </Link>
       <div>
         {isLoggedIn ? (
-          <Link className="main-nav-item" to={"/user"}>
+          <Link className="main-nav-item" to={"/user/profile"}>
             <BiUserCircle />
             {localStorage.getItem('firstName')}
           </Link>
         ) : (
-          <Link className="main-nav-item" to={"/api/v1/user/login"}>
+          <Link className="main-nav-item" to={"/user/login"}>
             <BiUserCircle />
             Sign In
           </Link>

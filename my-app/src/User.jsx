@@ -15,15 +15,14 @@ function UserPage() {
     const [editedUser, setEditedUser] = useState({...user});
 
     useEffect(() => {
-        if (!user) {
-            navigate('/user');
-            return;
-        }
-
+    if (!user && !token) {
+        navigate('/user/login');
+    } else {
         if (user && user.firstName && user.lastName) {
             setEditedUser({...user});
         }
-    }, [user, token, navigate]);
+    }
+}, [user, token, navigate]);
 
     const handleSaveName = () => {
         fetch('/api/v1/user/profile', {
@@ -47,6 +46,7 @@ function UserPage() {
                 }
             })
             .catch(error => {
+                 navigate('/user/login');
                 console.log('Error:', error.message);
             });
     };
@@ -56,17 +56,20 @@ function UserPage() {
         setEditedUser({...user});
     };
 
-    const handleSignOut = () => {
-        if (!isHomePage) {
-            dispatch(logOut());
-        }
-        navigate('/');
-    };
+   const handleSignOut = () => {
+  if (!isHomePage) {
+    dispatch(logOut());
+  }
+  navigate('/');
+};
+
+
+
 
     return (
         <div>
             <nav className="main-nav">
-                <Link className="main-nav-logo" to={'/'}>
+                <Link className="main-nav-logo" to={'/'} onClick={() => setIsHomePage(true)}>
                     <img
                         className="main-nav-logo-image"
                         src="https://res.cloudinary.com/dtx8credj/image/upload/v1684236293/argentBankLogo_mnzrjl.png"
